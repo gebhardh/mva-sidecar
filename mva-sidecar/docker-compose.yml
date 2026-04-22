@@ -23,30 +23,6 @@ services:
           cpus: '0.5'
           memory: 256M
 
-  victoriametrics:
-    image: victoriametrics/victoria-metrics:latest
-    container_name: victoriametrics
-    ports:
-      - "8428:8428"
-    volumes:
-      - vm_data:/victoria-metrics-data
-    command:
-      - '-storageDataPath=/victoria-metrics-data'
-      - '-retentionPeriod=90d'
-    networks:
-      - monitoring
-
-  vmagent:
-    image: victoriametrics/vmagent:latest
-    container_name: vmagent
-    depends_on:
-      - victoriametrics
-      - mva-sidecar
-    volumes:
-      - ./examples/vmagent-scrape-config.yaml:/etc/vmagent/scrape.yaml:ro
-    command:
-      - '-promscrape.config=/etc/vmagent/scrape.yaml'
-      - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
     networks:
       - monitoring
 
