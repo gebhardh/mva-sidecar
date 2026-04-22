@@ -1,0 +1,62 @@
+{
+  "title": "Mahalanobis Anomalie-Erkennung - Multi-Tenant Übersicht",
+  "description": "Drilldown-Dashboard für alle Reaktoren. Variable $tenant wählt den Reaktor.",
+  "templating": {
+    "list": [
+      {
+        "name": "tenant",
+        "type": "query",
+        "query": "label_values(mva_tenant_up, tenant)",
+        "multi": false,
+        "includeAll": true,
+        "current": {"text": "All", "value": "$__all"}
+      },
+      {
+        "name": "function",
+        "type": "query",
+        "query": "label_values(mva_mahalanobis_d_squared{tenant=~\"$tenant\"}, function)",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  },
+  "panels_description": [
+    {
+      "title": "Aktive Tenants",
+      "query": "sum(mva_tenant_up)",
+      "type": "stat"
+    },
+    {
+      "title": "Anomalien (letzte Stunde, pro Tenant)",
+      "query": "sum by (tenant) (increase(mva_collections_total{status=\"success\",tenant=~\"$tenant\"}[1h] * on(tenant) mva_is_outlier))",
+      "type": "bargauge"
+    },
+    {
+      "title": "Mahalanobis D² - alle Tenants über Zeit",
+      "query": "mva_mahalanobis_d_squared{tenant=~\"$tenant\"}",
+      "type": "timeseries",
+      "description": "Jede Linie = ein Reaktor"
+    },
+    {
+      "title": "Aktuelle Schwere pro Tenant",
+      "query": "mva_severity_level{tenant=~\"$tenant\"}",
+      "type": "stat",
+      "thresholds": [
+        {"value": 0, "color": "green"},
+        {"value": 1, "color": "blue"},
+        {"value": 2, "color": "yellow"},
+        {"value": 3, "color": "red"}
+      ]
+    },
+    {
+      "title": "Feature-Beiträge (ausgewählter Tenant)",
+      "query": "mva_feature_contribution{tenant=\"$tenant\"}",
+      "type": "barchart"
+    },
+    {
+      "title": "Haupttreiber pro Tenant",
+      "query": "topk(1, mva_feature_contribution) by (tenant)",
+      "type": "table"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+services:
+  mva-sidecar:
+    build: .
+    container_name: mva-sidecar
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - ./config.yaml:/etc/mva-sidecar/config.yaml:ro
+    environment:
+      - TZ=Europe/Berlin
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - victoriametrics
+    networks:
+      - monitoring
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoriametrics
+    ports:
+      - "8428:8428"
+    volumes:
+      - vm_data:/victoria-metrics-data
+    command:
+      - '-storageDataPath=/victoria-metrics-data'
+      - '-retentionPeriod=90d'
+    networks:
+      - monitoring
+
+  vmagent:
+    image: victoriametrics/vmagent:latest
+    container_name: vmagent
+    depends_on:
+      - victoriametrics
+      - mva-sidecar
+    volumes:
+      - ./examples/vmagent-scrape-config.yaml:/etc/vmagent/scrape.yaml:ro
+    command:
+      - '-promscrape.config=/etc/vmagent/scrape.yaml'
+      - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+
+volumes:
+  vm_data:

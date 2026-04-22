@@ -1,0 +1,112 @@
+vm:
+  read_url: http://victoriametrics:8428
+  write_url: http://victoriametrics:8428/api/v1/write
+  timeout_seconds: 30
+
+detector_defaults:
+  confidence: 0.99
+  use_robust: true
+  support_fraction: 0.75
+  variance_threshold: 1.0e-8
+  training_window_minutes: 1440
+  refit_interval_minutes: 60
+  min_training_samples: 100
+
+service:
+  collection_interval_seconds: 60
+  metrics_port: 9100
+  log_level: INFO
+  output_prefix: mva
+  push_mode: exporter
+
+tenants:
+  - id: reaktor_a
+    name: "Reaktor A - Hauptlinie"
+    enabled: true
+    labels:
+      function: muenchen
+      line: main
+      criticality: high
+    features:
+      - name: temperatur
+        query: 'avg(sensor_temperature{instance="A"})'
+      - name: druck
+        query: 'avg(sensor_pressure{instance="A"})'
+      - name: durchfluss
+        query: 'avg(sensor_flow{instance="A"})'
+      - name: ph_wert
+        query: 'avg(sensor_ph{instance="A"})'
+      - name: leitfaehigkeit
+        query: 'avg(sensor_conductivity{instance="A"})'
+
+  - id: reaktor_b
+    name: "Reaktor B - Hauptlinie"
+    enabled: true
+    labels:
+      function: muenchen
+      line: main
+      criticality: high
+    features:
+      - name: temperatur
+        query: 'avg(sensor_temperature{instance="B"})'
+      - name: druck
+        query: 'avg(sensor_pressure{instance="B"})'
+      - name: durchfluss
+        query: 'avg(sensor_flow{instance="B"})'
+      - name: ph_wert
+        query: 'avg(sensor_ph{instance="B"})'
+      - name: leitfaehigkeit
+        query: 'avg(sensor_conductivity{instance="B"})'
+
+  - id: reaktor_c_pilot
+    name: "Reaktor C - Pilotanlage"
+    enabled: true
+    labels:
+      function: muenchen
+      line: pilot
+      criticality: medium
+    detector:
+      confidence: 0.95
+      training_window_minutes: 720
+      refit_interval_minutes: 30
+      min_training_samples: 50
+    features:
+      - name: temperatur
+        query: 'avg(sensor_temperature{instance="C"})'
+      - name: druck
+        query: 'avg(sensor_pressure{instance="C"})'
+      - name: durchfluss
+        query: 'avg(sensor_flow{instance="C"})'
+
+  - id: reaktor_d_hamburg
+    name: "Reaktor D - Standort Hamburg"
+    enabled: true
+    labels:
+      function: hamburg
+      line: main
+      criticality: high
+    features:
+      - name: temperatur
+        query: 'avg(sensor_temperature{instance="D",function="hamburg"})'
+      - name: druck
+        query: 'avg(sensor_pressure{instance="D",function="hamburg"})'
+      - name: durchfluss
+        query: 'avg(sensor_flow{instance="D",function="hamburg"})'
+      - name: ph_wert
+        query: 'avg(sensor_ph{instance="D",function="hamburg"})'
+      - name: leitfaehigkeit
+        query: 'avg(sensor_conductivity{instance="D",function="hamburg"})'
+      - name: ruehrgeschwindigkeit
+        query: 'avg(sensor_stirrer_speed{instance="D"})'
+
+  - id: reaktor_e_wartung
+    name: "Reaktor E - In Wartung"
+    enabled: false
+    labels:
+      function: muenchen
+      line: main
+    features:
+      - name: temperatur
+        query: 'avg(sensor_temperature{instance="E"})'
+      - name: druck
+        query: 'avg(sensor_pressure{instance="E"})'

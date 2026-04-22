@@ -1,0 +1,58 @@
+vm:
+  read_url: http://victoriametrics:8428
+
+detector_defaults:
+  confidence: 0.99
+  use_robust: true
+  training_window_minutes: 1440
+  refit_interval_minutes: 120
+  min_training_samples: 100
+
+service:
+  collection_interval_seconds: 60
+  metrics_port: 9100
+  log_level: INFO
+  output_prefix: mva
+  push_mode: exporter
+
+tenants:
+  - id: reactor_a01
+    name: "Reactor A01"
+    labels: {function: muenchen, hall: 1, line: main}
+    features: &standard_sensors
+      - {name: temperatur, query: 'avg(sensor_temperature{instance="A01"})'}
+      - {name: druck, query: 'avg(sensor_pressure{instance="A01"})'}
+      - {name: durchfluss, query: 'avg(sensor_flow{instance="A01"})'}
+      - {name: ph_wert, query: 'avg(sensor_ph{instance="A01"})'}
+      - {name: leitfaehigkeit, query: 'avg(sensor_conductivity{instance="A01"})'}
+
+  - id: reactor_a02
+    name: "Reactor A02"
+    labels: {function: muenchen, hall: 1, line: main}
+    features:
+      - {name: temperatur, query: 'avg(sensor_temperature{instance="A02"})'}
+      - {name: druck, query: 'avg(sensor_pressure{instance="A02"})'}
+      - {name: durchfluss, query: 'avg(sensor_flow{instance="A02"})'}
+      - {name: ph_wert, query: 'avg(sensor_ph{instance="A02"})'}
+      - {name: leitfaehigkeit, query: 'avg(sensor_conductivity{instance="A02"})'}
+
+  - id: reactor_b01
+    name: "Reactor B01"
+    labels: {function: muenchen, hall: 2, line: backup}
+    detector:
+      confidence: 0.95
+      refit_interval_minutes: 60
+    features:
+      - {name: temperatur, query: 'avg(sensor_temperature{instance="B01"})'}
+      - {name: druck, query: 'avg(sensor_pressure{instance="B01"})'}
+      - {name: durchfluss, query: 'avg(sensor_flow{instance="B01"})'}
+
+  - id: reactor_h01
+    name: "Reactor H01 Hamburg"
+    labels: {function: hamburg, hall: 1, line: main}
+    features:
+      - {name: temperatur, query: 'avg(sensor_temperature{instance="H01"})'}
+      - {name: druck, query: 'avg(sensor_pressure{instance="H01"})'}
+      - {name: durchfluss, query: 'avg(sensor_flow{instance="H01"})'}
+      - {name: ph_wert, query: 'avg(sensor_ph{instance="H01"})'}
+      - {name: leitfaehigkeit, query: 'avg(sensor_conductivity{instance="H01"})'}

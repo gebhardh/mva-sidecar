@@ -1,0 +1,24 @@
+vm:
+  read_url: http://victoriametrics:8428
+
+detector_defaults:
+  confidence: 0.99
+  use_robust: true
+
+service:
+  collection_interval_seconds: 60
+  metrics_port: 9100
+  log_level: INFO
+
+tenants:
+  - id: reaktor_a
+    name: "Reaktor A"
+    labels:
+      function: muenchen
+    features:
+      - name: temperatur
+        query: 'avg(sensor_temperature{instance="A"})'
+      - name: druck
+        query: 'avg(sensor_pressure{instance="A"})'
+      - name: durchfluss
+        query: 'avg(sensor_flow{instance="A"})'

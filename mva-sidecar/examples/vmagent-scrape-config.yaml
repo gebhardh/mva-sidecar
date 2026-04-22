@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 30s
+  external_labels:
+    source: vmagent
+
+scrape_configs:
+  - job_name: mva-sidecar
+    scrape_interval: 30s
+    static_configs:
+      - targets:
+          - 'mva-sidecar:9100'
+        labels:
+          service: mva_anomaly_detection
+
+  - job_name: victoriametrics
+    scrape_interval: 30s
+    static_configs:
+      - targets:
+          - 'victoriametrics:8428'

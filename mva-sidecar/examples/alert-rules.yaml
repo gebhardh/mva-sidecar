@@ -1,0 +1,58 @@
+groups:
+  - name: mahalanobis_multi_tenant
+    interval: 30s
+    rules:
+      - alert: MahalanobisAnomalyHigh
+        expr: mva_severity_level >= 3
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Schwere multivariate Anomalie in {{ $labels.tenant }}"
+          description: |
+            Tenant {{ $labels.tenant }} meldet eine schwere Anomalie.
+            D² = {{ $value }}, Schwellwert = {{ with query "mva_threshold{tenant='" }}{{ . | first | value }}{{ end }}
+            Prüfen Sie den Haupttreiber im Dashboard.
+
+      - alert: MahalanobisAnomalyMedium
+        expr: mva_severity_level >= 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Moderate Anomalie in {{ $labels.tenant }}"
+
+      - alert: MahalanobisTenantDown
+        expr: mva_tenant_up == 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tenant {{ $labels.tenant }} nicht gefittet"
+          description: "Detektor konnte nicht initialisiert werden - prüfen Sie Trainingsdaten"
+
+      - alert: MahalanobisTenantStale
+        expr: time() - mva_tenant_last_success_timestamp_seconds > 300
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tenant {{ $labels.tenant }} ohne aktuelle Messungen"
+          description: "Keine erfolgreiche Prediction seit mehr als 5 Minuten"
+
+      - alert: MahalanobisVMQueryErrors
+        expr: rate(mva_vm_query_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "VictoriaMetrics-Query-Fehler bei Tenant {{ $labels.tenant }}"
+
+      - alert: MahalanobisFitFailures
+        expr: rate(mva_detector_fits_total{status!="success"}[1h]) > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Detector-Fit für {{ $labels.tenant }} schlägt fehl"
+          description: "Status: {{ $labels.status }}"
