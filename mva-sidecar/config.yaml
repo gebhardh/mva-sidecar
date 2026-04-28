@@ -4,109 +4,215 @@ vm:
   timeout_seconds: 30
 
 detector_defaults:
-  confidence: 0.99
-  use_robust: true
+  confidence: 0.9995
+  use_robust: false
   support_fraction: 0.75
   variance_threshold: 1.0e-8
   training_window_minutes: 1440
-  refit_interval_minutes: 60
-  min_training_samples: 100
+  refit_interval_minutes: 120
+  min_training_samples: 200
 
 service:
-  collection_interval_seconds: 60
+  collection_interval_seconds: 180
   metrics_port: 9100
   log_level: INFO
   output_prefix: mva
-  push_mode: exporter
+  push_mode: push
 
 tenants:
-  - id: reaktor_a
-    name: "Reaktor A - Hauptlinie"
+  - id: l5043022.bafw.irzi.de
+    name: "l5043022.bafw.irzi.de"
     enabled: true
     labels:
-      function: muenchen
-      line: main
+      Funktion: ssloffloader
+      Umgebung: IRZI
       criticality: high
     features:
-      - name: temperatur
-        query: 'avg(sensor_temperature{instance="A"})'
-      - name: druck
-        query: 'avg(sensor_pressure{instance="A"})'
-      - name: durchfluss
-        query: 'avg(sensor_flow{instance="A"})'
-      - name: ph_wert
-        query: 'avg(sensor_ph{instance="A"})'
-      - name: leitfaehigkeit
-        query: 'avg(sensor_conductivity{instance="A"})'
+      - name: netstat_tcp_syn_recv
+        query: avg_over_time(netstat_tcp_syn_recv{instance=~"l5043022.*"}[3m])
+      - name: netstat_tcp_closing
+        query: avg_over_time(netstat_tcp_closing{instance=~"l5043022.*"}[3m])
+      - name: netstat_tcp_established
+        query: avg_over_time(netstat_tcp_established{instance=~"l5043022.*"}[3m])
+      - name: netstat_tcp_fin_wait1
+        query: avg_over_time(netstat_tcp_fin_wait1{instance=~"l5043022.*"}[3m])
+      - name: netstat_tcp_fin_wait2
+        query: avg_over_time(netstat_tcp_fin_wait2{instance=~"l5043022.*"}[3m])
+      - name: netstat_tcp_close_wait
+        query: avg_over_time(netstat_tcp_close_wait{instance=~"l5043022.*"}[3m])
+      - name: netstat_tcp_time_wait
+        query: avg_over_time(netstat_tcp_time_wait{instance=~"l5043022.*"}[3m])
+      - name: system_load5
+        query: avg_over_time(system_load5{instance=~"l5043022.*"}[3m])
+      - name: processes_idle
+        query: avg_over_time(processes_idle{instance=~"l5043022.*"}[3m])
+      - name: processes_sleeping
+        query: avg_over_time(processes_sleeping{instance=~"l5043022.*"}[3m])
+      - name: mem_used
+        query: avg_over_time(mem_used{instance=~"l5043022.*"}[3m])
+      - name: mem_cached
+        query: avg_over_time(mem_cached{instance=~"l5043022.*"}[3m])
 
-  - id: reaktor_b
-    name: "Reaktor B - Hauptlinie"
+  - id: l5044022.bafw.irzi.de
+    name: "l5044022.bafw.irzi.de"
     enabled: true
     labels:
-      function: muenchen
-      line: main
+      Funktion: ssloffloader
+      Umgebung: IRZI
       criticality: high
     features:
-      - name: temperatur
-        query: 'avg(sensor_temperature{instance="B"})'
-      - name: druck
-        query: 'avg(sensor_pressure{instance="B"})'
-      - name: durchfluss
-        query: 'avg(sensor_flow{instance="B"})'
-      - name: ph_wert
-        query: 'avg(sensor_ph{instance="B"})'
-      - name: leitfaehigkeit
-        query: 'avg(sensor_conductivity{instance="B"})'
+      - name: netstat_tcp_syn_recv
+        query: avg_over_time(netstat_tcp_syn_recv{instance=~"l5044022.*"}[3m])
+      - name: netstat_tcp_closing
+        query: avg_over_time(netstat_tcp_closing{instance=~"l5044022.*"}[3m])
+      - name: netstat_tcp_established
+        query: avg_over_time(netstat_tcp_established{instance=~"l5044022.*"}[3m])
+      - name: netstat_tcp_fin_wait1
+        query: avg_over_time(netstat_tcp_fin_wait1{instance=~"l5044022.*"}[3m])
+      - name: netstat_tcp_fin_wait2
+        query: avg_over_time(netstat_tcp_fin_wait2{instance=~"l5044022.*"}[3m])
+      - name: netstat_tcp_close_wait
+        query: avg_over_time(netstat_tcp_close_wait{instance=~"l5044022.*"}[3m])
+      - name: netstat_tcp_time_wait
+        query: avg_over_time(netstat_tcp_time_wait{instance=~"l5044022.*"}[3m])
+      - name: system_load5
+        query: avg_over_time(system_load5{instance=~"l5044022.*"}[3m])
+      - name: processes_idle
+        query: avg_over_time(processes_idle{instance=~"l5044022.*"}[3m])
+      - name: processes_sleeping
+        query: avg_over_time(processes_sleeping{instance=~"l5044022.*"}[3m])
+      - name: mem_used
+        query: avg_over_time(mem_used{instance=~"l5044022.*"}[3m])
+      - name: mem_cached
+        query: avg_over_time(mem_cached{instance=~"l5044022.*"}[3m])  
 
-  - id: reaktor_c_pilot
-    name: "Reaktor C - Pilotanlage"
+  - id: l5045022.bafw.irzi.de
+    name: "l5045022.bafw.irzi.de"
     enabled: true
     labels:
-      function: muenchen
-      line: pilot
-      criticality: medium
-    detector:
-      confidence: 0.95
-      training_window_minutes: 720
-      refit_interval_minutes: 30
-      min_training_samples: 50
-    features:
-      - name: temperatur
-        query: 'avg(sensor_temperature{instance="C"})'
-      - name: druck
-        query: 'avg(sensor_pressure{instance="C"})'
-      - name: durchfluss
-        query: 'avg(sensor_flow{instance="C"})'
-
-  - id: reaktor_d_hamburg
-    name: "Reaktor D - Standort Hamburg"
-    enabled: true
-    labels:
-      function: hamburg
-      line: main
+      Funktion: ssloffloader
+      Umgebung: IRZI
       criticality: high
     features:
-      - name: temperatur
-        query: 'avg(sensor_temperature{instance="D",function="hamburg"})'
-      - name: druck
-        query: 'avg(sensor_pressure{instance="D",function="hamburg"})'
-      - name: durchfluss
-        query: 'avg(sensor_flow{instance="D",function="hamburg"})'
-      - name: ph_wert
-        query: 'avg(sensor_ph{instance="D",function="hamburg"})'
-      - name: leitfaehigkeit
-        query: 'avg(sensor_conductivity{instance="D",function="hamburg"})'
-      - name: ruehrgeschwindigkeit
-        query: 'avg(sensor_stirrer_speed{instance="D"})'
-
-  - id: reaktor_e_wartung
-    name: "Reaktor E - In Wartung"
-    enabled: false
+      - name: netstat_tcp_syn_recv
+        query: avg_over_time(netstat_tcp_syn_recv{instance=~"l5045022.*"}[3m])
+      - name: netstat_tcp_closing
+        query: avg_over_time(netstat_tcp_closing{instance=~"l5045022.*"}[3m])
+      - name: netstat_tcp_established
+        query: avg_over_time(netstat_tcp_established{instance=~"l5045022.*"}[3m])
+      - name: netstat_tcp_fin_wait1
+        query: avg_over_time(netstat_tcp_fin_wait1{instance=~"l5045022.*"}[3m])
+      - name: netstat_tcp_fin_wait2
+        query: avg_over_time(netstat_tcp_fin_wait2{instance=~"l5045022.*"}[3m])
+      - name: netstat_tcp_close_wait
+        query: avg_over_time(netstat_tcp_close_wait{instance=~"l5045022.*"}[3m])
+      - name: netstat_tcp_time_wait
+        query: avg_over_time(netstat_tcp_time_wait{instance=~"l5045022.*"}[3m])
+      - name: system_load5
+        query: avg_over_time(system_load5{instance=~"l5045022.*"}[3m])
+      - name: processes_idle
+        query: avg_over_time(processes_idle{instance=~"l5045022.*"}[3m])
+      - name: processes_sleeping
+        query: avg_over_time(processes_sleeping{instance=~"l5045022.*"}[3m])
+      - name: mem_used
+        query: avg_over_time(mem_used{instance=~"l5045022.*"}[3m])
+      - name: mem_cached
+        query: avg_over_time(mem_cached{instance=~"l5045022.*"}[3m])
+  - id: l5143022.bafw.irzi.de
+    name: "l5143022.bafw.irzi.de"
+    enabled: true
     labels:
-      function: muenchen
-      line: main
+      Funktion: ssloffloader
+      Umgebung: IRZI
+      criticality: high
     features:
-      - name: temperatur
-        query: 'avg(sensor_temperature{instance="E"})'
-      - name: druck
-        query: 'avg(sensor_pressure{instance="E"})'
+      - name: netstat_tcp_syn_recv
+        query: avg_over_time(netstat_tcp_syn_recv{instance=~"l5143022.*"}[3m])
+      - name: netstat_tcp_closing
+        query: avg_over_time(netstat_tcp_closing{instance=~"l5143022.*"}[3m])
+      - name: netstat_tcp_established
+        query: avg_over_time(netstat_tcp_established{instance=~"l5143022.*"}[3m])
+      - name: netstat_tcp_fin_wait1
+        query: avg_over_time(netstat_tcp_fin_wait1{instance=~"l5143022.*"}[3m])
+      - name: netstat_tcp_fin_wait2
+        query: avg_over_time(netstat_tcp_fin_wait2{instance=~"l5143022.*"}[3m])
+      - name: netstat_tcp_close_wait
+        query: avg_over_time(netstat_tcp_close_wait{instance=~"l5143022.*"}[3m])
+      - name: netstat_tcp_time_wait
+        query: avg_over_time(netstat_tcp_time_wait{instance=~"l5143022.*"}[3m])
+      - name: system_load5
+        query: avg_over_time(system_load5{instance=~"l5143022.*"}[3m])
+      - name: processes_idle
+        query: avg_over_time(processes_idle{instance=~"l5143022.*"}[3m])
+      - name: processes_sleeping
+        query: avg_over_time(processes_sleeping{instance=~"l5143022.*"}[3m])
+      - name: mem_used
+        query: avg_over_time(mem_used{instance=~"l5143022.*"}[3m])
+      - name: mem_cached
+        query: avg_over_time(mem_cached{instance=~"l5143022.*"}[3m])
+
+  - id: l5144022.bafw.irzi.de
+    name: "l5144022.bafw.irzi.de"
+    enabled: true
+    labels:
+      Funktion: ssloffloader
+      Umgebung: IRZI
+      criticality: high
+    features:
+      - name: netstat_tcp_syn_recv
+        query: avg_over_time(netstat_tcp_syn_recv{instance=~"l5144022.*"}[3m])
+      - name: netstat_tcp_closing
+        query: avg_over_time(netstat_tcp_closing{instance=~"l5144022.*"}[3m])
+      - name: netstat_tcp_established
+        query: avg_over_time(netstat_tcp_established{instance=~"l5144022.*"}[3m])
+      - name: netstat_tcp_fin_wait1
+        query: avg_over_time(netstat_tcp_fin_wait1{instance=~"l5144022.*"}[3m])
+      - name: netstat_tcp_fin_wait2
+        query: avg_over_time(netstat_tcp_fin_wait2{instance=~"l5144022.*"}[3m])
+      - name: netstat_tcp_close_wait
+        query: avg_over_time(netstat_tcp_close_wait{instance=~"l5144022.*"}[3m])
+      - name: netstat_tcp_time_wait
+        query: avg_over_time(netstat_tcp_time_wait{instance=~"l5144022.*"}[3m])
+      - name: system_load5
+        query: avg_over_time(system_load5{instance=~"l5144022.*"}[3m])
+      - name: processes_idle
+        query: avg_over_time(processes_idle{instance=~"l5144022.*"}[3m])
+      - name: processes_sleeping
+        query: avg_over_time(processes_sleeping{instance=~"l5144022.*"}[3m])
+      - name: mem_used
+        query: avg_over_time(mem_used{instance=~"l5144022.*"}[3m])
+      - name: mem_cached
+        query: avg_over_time(mem_cached{instance=~"l5144022.*"}[3m])
+        
+  - id: l5145022.bafw.irzi.de
+    name: "l5145022.bafw.irzi.de"
+    enabled: true
+    labels:
+      Funktion: ssloffloader
+      Umgebung: IRZI
+      criticality: high
+    features:
+      - name: netstat_tcp_syn_recv
+        query: avg_over_time(netstat_tcp_syn_recv{instance=~"l5145022.*"}[3m])
+      - name: netstat_tcp_closing
+        query: avg_over_time(netstat_tcp_closing{instance=~"l5145022.*"}[3m])
+      - name: netstat_tcp_established
+        query: avg_over_time(netstat_tcp_established{instance=~"l5145022.*"}[3m])
+      - name: netstat_tcp_fin_wait1
+        query: avg_over_time(netstat_tcp_fin_wait1{instance=~"l5145022.*"}[3m])
+      - name: netstat_tcp_fin_wait2
+        query: avg_over_time(netstat_tcp_fin_wait2{instance=~"l5145022.*"}[3m])
+      - name: netstat_tcp_close_wait
+        query: avg_over_time(netstat_tcp_close_wait{instance=~"l5145022.*"}[3m])
+      - name: netstat_tcp_time_wait
+        query: avg_over_time(netstat_tcp_time_wait{instance=~"l5145022.*"}[3m])
+      - name: system_load5
+        query: avg_over_time(system_load5{instance=~"l5145022.*"}[3m])
+      - name: processes_idle
+        query: avg_over_time(processes_idle{instance=~"l5145022.*"}[3m])
+      - name: processes_sleeping
+        query: avg_over_time(processes_sleeping{instance=~"l5145022.*"}[3m])
+      - name: mem_used
+        query: avg_over_time(mem_used{instance=~"l5145022.*"}[3m])
+      - name: mem_cached
+        query: avg_over_time(mem_cached{instance=~"l5145022.*"}[3m])
